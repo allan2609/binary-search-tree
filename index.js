@@ -40,6 +40,42 @@ class Tree {
 
     return root;
   }
+
+  deleteItem(value) {
+    this.root = this._deleteRec(this.root, value);
+  }
+
+  _deleteRec(root, value) {
+    if (root === null) {
+      return root;
+    }
+
+    if (value < root.data) {
+      root.left = this._deleteRec(root.left, value);
+    } else if (value > root.data) {
+      root.right = this._deleteRec(root.right, value);
+    } else {
+      // Node with only one child or no child
+      if (root.left === null) {
+        return root.right;
+      } else if (root.right === null) {
+        return root.left;
+      }
+      // Node with two children: Get the inorder successor (smallest in the right subtree)
+      root.data = this._minValue(root.right);
+      // Delete the inorder successor
+      root.right = this._deleteRec(root.right, root.data);
+    }
+    return root;
+  }
+
+  _minValue(node) {
+    let current = node;
+    while (current.left !== null) {
+      current = current.left;
+    }
+    return current.data;
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
