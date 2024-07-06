@@ -92,6 +92,163 @@ class Tree {
    
     return this._findRec(root.left, value);
   }
+
+  levelOrder(callback) {
+    if (!this.root) return [];
+
+    const queue = [this.root];
+    const result = [];
+
+    while (queue.length > 0) {
+      const node = queue.shift();
+      if (callback) {
+        callback(node);
+      } else {
+        result.push(node.data);
+      }
+      
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+
+    return callback ? undefined : result;
+  }
+
+  levelOrderRec(callback) {
+    if (!this.root) return [];
+
+    const queue = [this.root];
+    const result = [];
+
+    const processQueue = (queue) => {
+      if (queue.length === 0) return;
+
+      const node = queue.shift();
+      if (callback) {
+        callback(node);
+      } else {
+        result.push(node.data);
+      }
+      
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+
+      processQueue(queue);
+    };
+
+    processQueue(queue);
+    return callback ? undefined : result;
+  }
+
+  inOrder(callback) {
+    const result = [];
+    const traverse = (node) => {
+      if (node !== null) {
+        traverse(node.left);
+        if (callback) {
+          callback(node);
+        } else {
+          result.push(node.data);
+        }
+        traverse(node.right);
+      }
+    };
+    traverse(this.root);
+    return callback ? undefined : result;
+  }
+
+  preOrder(callback) {
+    const result = [];
+    const traverse = (node) => {
+      if (node !== null) {
+        if (callback) {
+          callback(node);
+        } else {
+          result.push(node.data);
+        }
+        traverse(node.left);
+        traverse(node.right);
+      }
+    };
+    traverse(this.root);
+    return callback ? undefined : result;
+  }
+
+  postOrder(callback) {
+    const result = [];
+    const traverse = (node) => {
+      if (node !== null) {
+        traverse(node.left);
+        traverse(node.right);
+        if (callback) {
+          callback(node);
+        } else {
+          result.push(node.data);
+        }
+      }
+    };
+    traverse(this.root);
+    return callback ? undefined : result;
+  }
+
+  height(node) {
+    if (node === null) {
+      return -1;
+    }
+
+    const leftHeight = this.height(node.left);
+    const rightHeight = this.height(node.right);
+
+    return Math.max(leftHeight, rightHeight) + 1;
+  }
+
+  depth(node) {
+    const depthRec = (currentNode, targetNode, currentDepth) => {
+      if (currentNode === null) {
+        return -1;
+      }
+      if (currentNode === targetNode) {
+        return currentDepth;
+      }
+      
+      let leftDepth = depthRec(currentNode.left, targetNode, currentDepth + 1);
+      if (leftDepth !== -1) {
+        return leftDepth;
+      }
+      
+      let rightDepth = depthRec(currentNode.right, targetNode, currentDepth + 1);
+      return rightDepth;
+    };
+
+    return depthHelper(this.root, node, 0);
+  }
+
+  isBalanced() {
+    const checkBalance = (node) => {
+      if (node === null) {
+        return 0;
+      }
+      const leftHeight = checkBalance(node.left);
+      if (leftHeight === -1) {
+        return -1;
+      }
+      const rightHeight = checkBalance(node.right);
+      if (rightHeight === -1) {
+        return -1;
+      }
+      if (Math.abs(leftHeight - rightHeight) > 1) {
+        return -1;
+      }
+      return Math.max(leftHeight, rightHeight) + 1;
+    };
+
+    return checkBalance(this.root) !== -1;
+  }
+
+  rebalance() {
+    const nodesArray = this.inOrder();
+    this.root = this.buildTree(nodesArray, 0, nodesArray.length - 1);
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
