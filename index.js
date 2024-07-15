@@ -203,21 +203,21 @@ class Tree {
   }
 
   depth(node) {
-    const depthRec = (currentNode, targetNode, currentDepth) => {
+    const depthHelper = (currentNode, targetNode, currentDepth) => {
       if (currentNode === null) {
-        return -1;
+        return -1; // Node not found in this subtree
       }
       if (currentNode === targetNode) {
         return currentDepth;
       }
       
-      let leftDepth = depthRec(currentNode.left, targetNode, currentDepth + 1);
+      let leftDepth = depthHelper(currentNode.left, targetNode, currentDepth + 1);
       if (leftDepth !== -1) {
-        return leftDepth;
+        return leftDepth; // Node found in left subtree
       }
       
-      let rightDepth = depthRec(currentNode.right, targetNode, currentDepth + 1);
-      return rightDepth;
+      let rightDepth = depthHelper(currentNode.right, targetNode, currentDepth + 1);
+      return rightDepth; // May be -1 if not found
     };
 
     return depthHelper(this.root, node, 0);
